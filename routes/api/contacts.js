@@ -1,16 +1,16 @@
 const express = require('express')
-const model = require('../../model/index')
-const { createValidation, updateValidation } = require('./validation')
+const modul = require('../../model/contacts/index');
+const { createValidation, updateValidation } = require('../../midllewares/validation/contactValidation.js')
 const router = express.Router()
 
 router.get('/', async (_req, res, _next) => {
-  const contacts = await model.listContacts();
+  const contacts = await modul.listContacts();
   res.status(200).json(contacts);
 })
 
 router.get('/:id', async (req, res, _next) => {
   const { id } = req.params;
-  const contacts = await model.getContactById(id);
+  const contacts = await modul.getContactById(id);
 
   if (contacts) {
     return res.status(200).json(contacts);
@@ -20,7 +20,7 @@ router.get('/:id', async (req, res, _next) => {
 })
 
 router.post('/',createValidation, async (req, res, next) => {
-  const contacts = await model.addContact(req.body);
+  const contacts = await modul.addContact(req.body);
   if (contacts) {
      res.status(201).json(contacts);
   }
@@ -29,7 +29,7 @@ router.post('/',createValidation, async (req, res, next) => {
 
 router.delete('/:id', async (req, res, _next) => {
   const { id } = req.params;
-  const contacts = await model.removeContact(id);
+  const contacts = await modul.removeContact(id);
   if (contacts) {
     return res.status(200).json({"message": "contact deleted"});
   }
@@ -38,7 +38,7 @@ router.delete('/:id', async (req, res, _next) => {
 
 router.put('/:id',updateValidation, async (req, res, next) => {
  const { id } = req.params;
-  const contacts = await model.updateContact(id, req.body);
+  const contacts = await modul.updateContact(id, req.body);
   if (contacts) {
     return res.status(200).json(contacts);
   }
