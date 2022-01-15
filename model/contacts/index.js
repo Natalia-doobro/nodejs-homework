@@ -1,53 +1,65 @@
-const fs = require('fs/promises');
-const path = require('path');
-const crypto = require('crypto');
 
-const contactsPath = path.join(__dirname,'../../db', 'contacts.json');
+// const addContact = async (body) => {
+//   const contacts = await readContent();
+//   const newContact = {id: crypto.randomUUID(), ...body}
+//   contacts.push(newContact)
+//   await writeContent(contacts);
+//   return newContact;
+// }
+// const updateContact = async (contactId, body) => {
+//   const contacts = await readContent();
+//   const updatedContact = contacts.find((contact) => contact.id === contactId);
+//   const index = contacts.indexOf(updatedContact);
+  
+//   if (index !== -1) {
+//     const updatedContact = { id: contactId,...contacts[index], ...body };
+//     contacts[index] = updatedContact;
+//     await writeContent(contacts);
+//     return updatedContact;
+//   }
+// }
 
-const readContent = async () => {
-    const contact = await fs.readFile(contactsPath, 'utf8',);
-    const result = JSON.parse(contact);
-    return result;
+const db = require('../../db/db');
+const { ObjectId } = require('mongodb');
+
+const readCollection = async (db, name) => { 
+  const client = await db;
+  const collection = await client.db().collection(name);
+  return collection;
 }
-
-const writeContent = async (contact) => {
-    const newcontact = await fs.writeFile(contactsPath, JSON.stringify(contact, null, 2));
-    return newcontact;
-}
-
 
 const listContacts = async () => {
-  return await readContent();
+  const collection = await readCollection(db, 'contacts');
+  const result = await collection.find().toArray();
+  return result;
 }
+
 const getContactById = async (contactId) => {
-  const contacts = await readContent();
-  const [contact] = contacts.filter((contact) => contact.id === contactId);
-  return contact;
+  const collection = await readCollection(db, 'contacts');
+  const id = ObjectId(contactId);
+  const [result] = await collection.find({_id: id}).toArray();
+  return result;
 }
+
 const removeContact = async (contactId) => {
-  const contacts = await readContent();
-  const newList = contacts.filter(contact => contact.id !== contactId);
-  await writeContent(newList);
-  return newList;
+  const collection = await readCollection(db, 'contacts');
+  const id = ObjectId(contactId);
+  const {value: result} = await collection.findOneAndDelete({_id: id});
+  return result;
 }
+
 const addContact = async (body) => {
-  const contacts = await readContent();
-  const newContact = {id: crypto.randomUUID(), ...body}
-  contacts.push(newContact)
-  await writeContent(contacts);
-  return newContact;
+  const collection = await readCollection(db, 'contacts');
+  const newContact = { ...body, favorite: false, };
+  const result = await collection.insertOne(newContact);
+  return result;
 }
+
 const updateContact = async (contactId, body) => {
-  const contacts = await readContent();
-  const updatedContact = contacts.find((contact) => contact.id === contactId);
-  const index = contacts.indexOf(updatedContact);
-  
-  if (index !== -1) {
-    const updatedContact = { id: contactId,...contacts[index], ...body };
-    contacts[index] = updatedContact;
-    await writeContent(contacts);
-    return updatedContact;
-  } 
+  const collection = await readCollection(db, 'contacts');
+  const id = ObjectId(contactId);
+  const {value: result} = await collection.findOneAndUpdate({_id: id}, {$set: body}, {returnDocument: "after"});
+  return result;
 }
 
 module.exports = {
