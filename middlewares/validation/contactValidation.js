@@ -33,7 +33,7 @@ const querySchema = Joi.object({
   sortByDesc: Joi.string().valid("id", "name", "email", "phone", "age", "favorite").optional(),
   filter: Joi.string()
     // eslint-disable-next-line prefer-regex-literals
-    .pattern(new RegExp('(name|email|phone|age)\\|?(name|email|phone|age)+'))
+    .pattern(new RegExp('(name|email|phone|age|favorite)\\|?(name|email|phone|age|favorite)+'))
     .optional(),
 });
 
