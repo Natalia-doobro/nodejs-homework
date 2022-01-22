@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { MIN_AGE, MAX_AGE } = require('../lib/constants');
-const { Schema, model } = mongoose;
+const { Schema, SchemaTypes, model } = mongoose;
 
 const contactSchema = new Schema({
     name: {
@@ -23,6 +23,11 @@ const contactSchema = new Schema({
       type: Boolean,
       default: false,
     },
+    owner: {
+      type: SchemaTypes.ObjectId,
+      ref: 'user',
+      required: true,
+    }
   },
   {
     versionKey: false,

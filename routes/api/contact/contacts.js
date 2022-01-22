@@ -8,18 +8,19 @@ const {
   updatefavoriteContact,
 } = require('../../../controllers/contacts/index')
 const { createValidation, updateValidation, updateStatusValidation, validateId, queryValidation } = require('../../../middlewares/validation/contactValidation.js')
+const guard = require('../../../middlewares/guard/guard')
 const router = express.Router()
 
-router.get('/',queryValidation,  getCollection)
+router.get('/',[guard, queryValidation],  getCollection)
 
-router.get('/:id',validateId, getContactId)
+router.get('/:id',[guard, validateId], getContactId)
 
-router.post('/',createValidation, addContacts)
+router.post('/',[guard, createValidation], addContacts)
 
-router.delete('/:id', deleteContact)
+router.delete('/:id', guard, deleteContact)
 
-router.put('/:id',updateValidation, updateContacts)
+router.put('/:id',[ guard, validateId, updateValidation], updateContacts)
 
-router.patch('/:id/favorite',updateStatusValidation, updatefavoriteContact)
+router.patch('/:id/favorite',[ guard, validateId, updateStatusValidation], updatefavoriteContact)
 
 module.exports = router
