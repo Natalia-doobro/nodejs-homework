@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const { findByEmail, create, updateToken, updateSubscription } = require('../../repository/users/index')
-const {SUBSCRIPTIO} = require('../../lib/constants')
 require('dotenv').config()
 
 const sicretKey = process.env.JWT_SECRET_KEY;
@@ -12,8 +11,8 @@ class AuthService {
     }
 
     async create(body) {
-        const {id, name, email, subscription} = await create(body);
-        return { id, name, email, subscription}
+        const {id, name, email, subscription, avatarURL} = await create(body);
+        return { id, name, email, subscription, avatarURL}
     }
 
     async getUser(email, password ) {
