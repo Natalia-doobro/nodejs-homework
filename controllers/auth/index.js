@@ -1,8 +1,10 @@
-const {HttpCode, MESSAGE} = require('../../lib/constants')
+const { HttpCode, MESSAGE } = require('../../lib/constants')
+const { EmailService, SenderSendgrid } = require('../../service/email/index')
 const AuthService = require('../../service/auth/index')
 const authService = new AuthService();
+require('dotenv').config()
 
-const signup = async (req, res, _next) => {
+const signup = async (req, res, next) => {
     const { email } = req.body;
     const isUserExist = await authService.isUserExist(email);
 
@@ -16,8 +18,20 @@ const signup = async (req, res, _next) => {
             });
     }
 
-    const data = await authService.create(req.body);
-    res.status(HttpCode.CREATED).json({ status: 'success', code: `${HttpCode.CREATED} Created`, data:  {user: data}});
+    const userData = await authService.create(req.body);
+    const emailService = new EmailService(
+        process.env.NODE_ENV,
+        new SenderSendgrid(),
+    );
+
+    const isSend = await emailService.sendVerifyEmail(
+        email,
+        userData.name,
+        userData.verificationToken
+    );
+    delete userData.verificationToken;
+
+    res.status(HttpCode.CREATED).json({ status: 'success', code: `${HttpCode.CREATED} Created`, data: { ...userData, isSendEmailVerify: isSend } });
 }
 
 const login = async (req, res, _next) => {

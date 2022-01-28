@@ -12,6 +12,10 @@ const loginSchema = Joi.object({
   password: Joi.string().required(),
 });
 
+const emailSchema = Joi.object({
+  email: Joi.string().email().required()
+});
+
 
 
 const registrationValidation = async (req, res, next) => {
@@ -34,4 +38,14 @@ const loginValidation = async (req, res, next) => {
   next();
 };
 
-module.exports = { registrationValidation, loginValidation }
+const emailValidation = async (req, res, next) => {
+  try {
+    await emailSchema.validateAsync(req.body);
+  } catch (err) {
+    return res.status(400).json({ "message": `Missing required ${err.message.replace(/"/g, '').replace('is required', '')}field` });
+  }
+  
+  next();
+};
+
+module.exports = { registrationValidation, loginValidation, emailValidation }
