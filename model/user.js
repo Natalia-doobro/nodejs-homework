@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const gravatar = require('gravatar');
+const {randomUUID} = require('crypto');
 const { SUBSCRIPTIO } = require('../lib/constants');
 const { Schema, model } = mongoose;
 
@@ -43,6 +44,14 @@ const userSchema = new Schema({
     idAvatarCloud:{
       type: String,
       default: null,
+    },
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      default: randomUUID(), 
     },
   },
   {

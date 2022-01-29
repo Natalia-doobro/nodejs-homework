@@ -11,6 +11,11 @@ const findByEmail = async (email) => {
     return result;
 }
 
+const findByVerifyToken = async (verificationToken) => {
+    const result = await User.findOne({ verificationToken });
+    return result;
+}
+
 const create = async (body) => {
     const user = new User(body);
     return await user.save();
@@ -31,4 +36,9 @@ const updateAvatar = async (id, avatar, idAvatarCloud=null) => {
     return result; 
 }
 
-module.exports = {findById, findByEmail, create, updateToken, updateSubscription, updateAvatar};
+const updateVerify = async (id, status) => {
+    const result = await User.updateOne({_id: id},{ verify: status, verificationToken: null});
+    return result; 
+}
+
+module.exports = {findById, findByEmail, create, updateToken, updateSubscription, updateAvatar, findByVerifyToken, updateVerify};

@@ -10,4 +10,4 @@ router.post('/login',loginValidation,  login)
 router.post('/logout', guard, logout)
 router.post('/current', guard, current)
 
-module.exports = router
+module.exports = router 
